@@ -1,7 +1,10 @@
 export const SECURITY_MODE_STANDALONE = 'cookie'
 export const SECURITY_MODE_JWT = 'jwt'
 
-const baseUrl = process.env.BASE_URL || '/'
+const baseUrl = process.env.BASE_URL || ''
+const pathPrefix = process.env.PATH_PREFIX || ''
+const staticContentUrl = process.env.STATIC_CONTENT_URL || ''
+const cdn = process.env.CDN || false
 
 let securityMode = SECURITY_MODE_STANDALONE
 let browserUrl = process.env.KRATOS_BROWSER_URL || ''
@@ -24,6 +27,9 @@ export default {
     public: publicUrl.replace(/\/+$/, ''),
   },
   baseUrl,
+  pathPrefix,
+  staticContentUrl,
+  cdn,
   jwksUrl: process.env.JWKS_URL || '/',
   projectName: process.env.PROJECT_NAME || 'SecureApp',
 

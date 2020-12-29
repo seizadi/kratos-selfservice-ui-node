@@ -2,7 +2,7 @@ rand := $(shell openssl rand -hex 6)
 
 .PHONY: docker
 docker:
-		docker build -t oryd/kratos-selfservice-ui-node:latest .
+		docker build -t soheileizadi/kratos-selfservice-ui-node:latest .
 
 .PHONY: build-sdk
 build-sdk:

@@ -25,6 +25,6 @@ export default (req: Request, res: Response, next: NextFunction) => {
     next()
   }).catch(() => {
     // If no session is found, redirect to login.
-    res.redirect(urljoin(config.baseUrl, '/auth/login'))
+    res.redirect(urljoin(config.pathPrefix, '/auth/login'))
   })
 }

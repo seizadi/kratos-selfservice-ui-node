@@ -29,12 +29,20 @@ app.set('view engine', 'hbs')
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.locals.projectName = config.projectName
   res.locals.baseUrl = config.baseUrl
-  res.locals.pathPrefix = config.baseUrl ? '' : '/'
+  res.locals.pathPrefix = config.pathPrefix
+  res.locals.staticContentUrl = config.staticContentUrl
   next()
 })
 
-app.use(express.static('public'))
-app.use(express.static('node_modules/normalize.css'))
+if ( !config.cdn) {
+  if (config.pathPrefix) {
+    app.use(config.pathPrefix, express.static('public'))
+    app.use(config.pathPrefix, express.static('node_modules/normalize.css'))
+  } else {
+    app.use(express.static('public'))
+    app.use(express.static('node_modules/normalize.css'))
+  }
+}
 
 app.engine(
   'hbs',
@@ -58,39 +66,39 @@ app.engine(
 if (process.env.NODE_ENV === 'stub') {
   // Setting NODE_ENV to "only-ui" disables all integration and only shows the UI. Useful
   // when working on CSS or HTML things.
-  app.get('/', dashboard)
-  app.get('/auth/registration', (_: Request, res: Response) => {
+  app.get(`${(config.pathPrefix.length > 0) ? config.pathPrefix : '/'}`, dashboard)
+  app.get(`${config.pathPrefix}/auth/registration`, (_: Request, res: Response) => {
     res.render('registration', {
       password: stubs.registration.methods.password.config,
       oidc: stubs.registration.methods.oidc.config,
     })
   })
-  app.get('/auth/login', (_: Request, res: Response) => {
+  app.get(`${config.pathPrefix}/auth/login`, (_: Request, res: Response) => {
     res.render('login', {
       password: stubs.login.methods.password.config,
       oidc: stubs.login.methods.oidc.config,
     })
   })
-  app.get('/settings', (_: Request, res: Response) => {
+  app.get(`${config.pathPrefix}/settings`, (_: Request, res: Response) => {
     res.render('settings', stubs.settings)
   })
-  app.get('/error', (_: Request, res: Response) => res.render('error'))
+  app.get(`${config.pathPrefix}/error`, (_: Request, res: Response) => res.render('error'))
 } else {
-  app.get('/', protect, dashboard)
-  app.get('/dashboard', protect, dashboard)
-  app.get('/auth/registration', registrationHandler)
-  app.get('/auth/login', loginHandler)
-  app.get('/error', errorHandler)
-  app.get('/settings', protect, settingsHandler)
-  app.get('/verify', verifyHandler)
-  app.get('/recovery', recoveryHandler)
+  app.get(`${(config.pathPrefix.length > 0) ? config.pathPrefix : '/'}`, protect, dashboard)
+  app.get(`${config.pathPrefix}/dashboard`, protect, dashboard)
+  app.get(`${config.pathPrefix}/auth/registration`, registrationHandler)
+  app.get(`${config.pathPrefix}/auth/login`, loginHandler)
+  app.get(`${config.pathPrefix}/error`, errorHandler)
+  app.get(`${config.pathPrefix}/settings`, protect, settingsHandler)
+  app.get(`${config.pathPrefix}/verify`, verifyHandler)
+  app.get(`${config.pathPrefix}/recovery`, recoveryHandler)
 }
 
-app.get('/health', (_: Request, res: Response) => res.send('ok'))
-app.get('/debug', debug)
+app.get(`/health`, (_: Request, res: Response) => res.send('ok'))
+app.get(`/debug`, debug)
 
-app.get('*', (_: Request, res: Response) => {
-  res.redirect(config.baseUrl)
+app.get(`${config.pathPrefix}/*`, (_: Request, res: Response) => {
+  res.redirect(config.pathPrefix)
 })
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

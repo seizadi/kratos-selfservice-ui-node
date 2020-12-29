@@ -97,6 +97,14 @@ export KRATOS_PUBLIC_URL=http://127.0.0.1:4433/
 export KRATOS_ADMIN_URL=http://127.0.0.1:4434/
 export PORT=4455
 
+# For my testing...
+export PORT=80
+export PATH_PREFIX=/sso
+export STATIC_CONTENT_URL=/sso
+#
+export CDN=true
+export STATIC_CONTENT_URL= https://someCDN
+
 # In ORY Kratos run the quickstart:
 #
 #   make quickstart-dev
